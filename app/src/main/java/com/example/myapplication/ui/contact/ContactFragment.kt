@@ -1,8 +1,7 @@
-package com.example.myapplication.ui.home
+package com.example.myapplication.ui.contact
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,7 @@ import org.json.JSONObject
 import java.io.IOException
 import java.io.InputStream
 
-class HomeFragment : Fragment() {
+class ContactFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private lateinit var recyclerView: RecyclerView
