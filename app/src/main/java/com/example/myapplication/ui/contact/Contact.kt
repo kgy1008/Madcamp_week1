@@ -1,4 +1,4 @@
-package com.example.myapplication.ui.home
+package com.example.myapplication.ui.contact
 
 data class Contact(
     val name: String,
