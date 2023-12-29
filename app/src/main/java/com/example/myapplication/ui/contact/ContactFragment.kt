@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.databinding.FragmentHomeBinding
+import com.example.myapplication.databinding.FragmentContactBinding
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -16,7 +16,7 @@ import java.io.InputStream
 
 class ContactFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentContactBinding? = null
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ContactAdapter
 
@@ -27,7 +27,7 @@ class ContactFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentContactBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         recyclerView = binding.recyclerView // RecyclerView 연결

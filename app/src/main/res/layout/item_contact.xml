@@ -4,23 +4,40 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+<<<<<<< HEAD
+    android:padding="20dp">
+=======
+    android:paddingVertical="16dp"
+    android:paddingHorizontal="16dp">
+>>>>>>> kgy1008
 
     <TextView
         android:id="@+id/nameTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Name"
         android:textSize="25sp"
         android:textStyle="bold"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:paddingStart="20dp"
+        android:paddingEnd="16dp"/>
 
     <TextView
         android:id="@+id/numberTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PhoneNumber"
         android:textSize="20sp"
-        android:textColor="@color/black" />
+        android:textColor="@color/black"
+        android:paddingStart="20dp"
+        android:paddingEnd="16dp"
+        />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
 
 </LinearLayout>
