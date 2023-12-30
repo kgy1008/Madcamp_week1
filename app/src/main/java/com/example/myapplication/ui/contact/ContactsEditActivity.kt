@@ -73,12 +73,7 @@ class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatc
     }
 
     private fun updateSaveButtonState() {
-        binding.btnSave.isEnabled = if (isEditMode) {
-            binding.editName.text.isNotBlank() && binding.editNumber.text.isNotBlank()
-                    && !(contacts?.number == binding.editNumber.text.toString() && contacts?.name == binding.editName.text.toString())
-        } else {
-            binding.editName.text.isNotBlank() && binding.editNumber.text.isNotBlank()
-        }
+        binding.editName.text.isNotBlank() && binding.editNumber.text.isNotBlank() && !(contacts?.number == binding.editNumber.text.toString() && contacts?.name == binding.editName.text.toString())
     }
 
     private fun setEditContacts() {
