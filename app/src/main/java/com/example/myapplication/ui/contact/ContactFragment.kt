@@ -26,7 +26,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
 
     private val onItemClickListener = object : ContactsAdapter.OnItemClickListener {
         override fun onItemClickListener(position: Int) {
-            val intent = Intent(requireContext(), ContactsAddEditActivity::class.java)
+            val intent = Intent(requireContext(), ContactsEditActivity::class.java)
                 .putExtra("contactsData", contactsList[position])
             startActivity(intent)
         }
@@ -38,7 +38,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
                 requestPermission()
             }
             binding?.btnAddContacts -> {
-                startActivity(Intent(requireContext(), ContactsAddEditActivity::class.java))
+                startActivity(Intent(requireContext(), ContactsAddActivity::class.java))
             }
         }
     }

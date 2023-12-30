@@ -26,10 +26,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.contact.ContactsAddEditActivity"
+            android:name=".ui.contact.ContactsEditActivity"
             android:label="연락처 편집"
         android:exported="false"
         android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name=".ui.contact.ContactsAddActivity"
+            android:label="연락처 추가"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"/>
 
     </application>
 

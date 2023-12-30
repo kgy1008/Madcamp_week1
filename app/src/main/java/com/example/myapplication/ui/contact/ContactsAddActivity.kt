@@ -11,10 +11,9 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.myapplication.databinding.ActivityContactsAddEditBinding
-import java.util.*
 import kotlin.collections.ArrayList
 
-class ContactsAddEditActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
+class ContactsAddActivity : AppCompatActivity(), View.OnClickListener {
 
     private val binding by lazy { ActivityContactsAddEditBinding.inflate(layoutInflater) }
     private var isEditMode = false
@@ -23,9 +22,7 @@ class ContactsAddEditActivity : AppCompatActivity(), View.OnClickListener, TextW
     override fun onClick(v: View?) {
         when (v) {
             binding.btnSave -> {
-                if (isEditMode) {
-                    setEditContacts()
-                } else {
+                if (!isEditMode) {
                     setAddContacts()
                 }
             }
@@ -34,14 +31,6 @@ class ContactsAddEditActivity : AppCompatActivity(), View.OnClickListener, TextW
             }
         }
     }
-
-    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-        updateSaveButtonState()
-    }
-
-    override fun afterTextChanged(p0: Editable?) {}
-
-    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,22 +49,23 @@ class ContactsAddEditActivity : AppCompatActivity(), View.OnClickListener, TextW
 
     private fun initLayout() {
         setContentView(binding.root)
-
-        if (isEditMode) {
-            binding.layoutTitle.txtTitle.text = "연락처 편집"
-            binding.editName.setText(contacts?.name)
-            binding.editNumber.setText(contacts?.number)
-        } else {
-            binding.layoutTitle.txtTitle.text = "연락처 추가"
-        }
     }
 
     private fun initListener() {
         binding.btnSave.setOnClickListener(this)
         binding.btnCancel.setOnClickListener(this)
         binding.editNumber.addTextChangedListener(PhoneNumberFormattingTextWatcher())
-        binding.editNumber.addTextChangedListener(this)
-        binding.editName.addTextChangedListener(this)
+
+        // Comment out this line to remove TextWatcher
+        // binding.editNumber.addTextChangedListener(this)
+
+        binding.editName.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable?) {
+                updateSaveButtonState()
+            }
+        })
     }
 
     private fun updateSaveButtonState() {
@@ -85,40 +75,6 @@ class ContactsAddEditActivity : AppCompatActivity(), View.OnClickListener, TextW
         } else {
             binding.editName.text.isNotBlank() && binding.editNumber.text.isNotBlank()
         }
-    }
-
-    private fun setEditContacts() {
-        val list = ArrayList<ContentProviderOperation>()
-
-        var where = "${ContactsContract.Data.CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}='${ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE}'"
-        var whereArgs = arrayOf(contacts?.contactsId.toString())
-
-        list.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI).apply {
-            withSelection(where, whereArgs)
-            withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, "")
-            withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, binding.editName.text.toString())
-        }.build())
-
-        where = "${ContactsContract.Data.CONTACT_ID}=? AND ${ContactsContract.Data.MIMETYPE}='${ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE}' AND ${
-            ContactsContract.CommonDataKinds
-                .Phone.NUMBER
-        }=?"
-        whereArgs = arrayOf(contacts?.contactsId.toString(), contacts?.number.toString())
-
-        list.add(ContentProviderOperation.newUpdate(ContactsContract.Data.CONTENT_URI).apply {
-            withSelection(where, whereArgs)
-            withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, binding.editNumber.text.toString())
-        }.build())
-
-        try {
-            contentResolver.applyBatch(ContactsContract.AUTHORITY, list)
-            Toast.makeText(this, "연락처가 수정되었습니다.", Toast.LENGTH_SHORT).show()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(this, "연락처 수정에 실패하였습니다.", Toast.LENGTH_SHORT).show()
-        }
-
-        finish()
     }
 
     private fun setAddContacts() {
