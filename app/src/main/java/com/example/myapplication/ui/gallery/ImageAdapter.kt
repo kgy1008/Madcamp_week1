@@ -9,7 +9,7 @@ import com.example.myapplication.databinding.ItemImagesBinding
 
 class ImageAdapter(
     private val context: Context,
-    private val imageList: List<Image>
+    private val imageList: ArrayList<Image>
 ) : RecyclerView.Adapter<ImageAdapter.MyViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
@@ -29,12 +29,11 @@ class ImageAdapter(
     class MyViewHolder(private val binding: ItemImagesBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(image: Image) {
-            binding.image.setImageResource(image.imageSrc)
-            binding.imageTitle.text = image.title
+            binding.image.setImageURI(image.imageSrc)
 
-            binding.cardView.setOnClickListener {
-                Toast.makeText(binding.root.context, image.title, Toast.LENGTH_LONG).show()
-            }
+            //binding.cardView.setOnClickListener {
+            //  Toast.makeText(binding.root.context, image.title, Toast.LENGTH_LONG).show()
+            //}
         }
     }
 }

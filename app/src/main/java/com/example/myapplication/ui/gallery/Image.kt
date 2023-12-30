@@ -1,6 +1,7 @@
 package com.example.myapplication.ui.gallery
 
+import android.net.Uri
+
 class Image (
-    var title : String,
-    var imageSrc : Int
+    var imageSrc : Uri
 )
