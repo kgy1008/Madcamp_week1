@@ -3,31 +3,38 @@ package com.example.myapplication.ui.gallery
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemImagesBinding
 
 class ImageAdapter(
     private val context: Context,
-    private val images: List<Image>
-) : RecyclerView.Adapter<ImageAdapter.ImageViewHolder>() {
+    private val imageList: List<Image>
+) : RecyclerView.Adapter<ImageAdapter.MyViewHolder>() {
 
-    class ImageViewHolder(private val binding: ItemImagesBinding) : RecyclerView.ViewHolder(binding.root) {
-        fun bindView(image: Image) {
-            binding.image.setImageResource(image.imageSrc)
-            binding.imageTitle.text = image.title
-        }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
+        val binding = ItemImagesBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return MyViewHolder(binding)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ImageViewHolder {
-        val binding = ItemImagesBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-        return ImageViewHolder(binding)
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        val currentImage = imageList[position]
+        holder.bind(currentImage)
     }
 
     override fun getItemCount(): Int {
-        return images.size
+        return imageList.size
     }
 
-    override fun onBindViewHolder(holder: ImageViewHolder, position: Int) {
-        holder.bindView(images[position])
+    class MyViewHolder(private val binding: ItemImagesBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(image: Image) {
+            binding.image.setImageResource(image.imageSrc)
+            binding.imageTitle.text = image.title
+
+            binding.cardView.setOnClickListener {
+                Toast.makeText(binding.root.context, image.title, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
