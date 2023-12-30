@@ -1,86 +1,116 @@
 package com.example.myapplication.ui.contact
 
-import android.content.Context
+import ContactsData
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.FragmentContactBinding
-import org.json.JSONException
-import org.json.JSONObject
-import java.io.IOException
-import java.io.InputStream
 
 class ContactFragment : Fragment() {
 
-    private var _binding: FragmentContactBinding? = null
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: ContactAdapter
+    companion object {
+        const val PERMISSION_REQUEST_CODE = 100
+    }
 
-    private val binding get() = _binding!!
+    private var binding: FragmentContactBinding? = null
+    private var contactsAdapter: ContactsAdapter? = null
+    private var contactsList = ArrayList<ContactsData>()
 
     override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
+        inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentContactBinding.inflate(inflater, container, false)
-        val root: View = binding.root
-
-        recyclerView = binding.recyclerView // RecyclerView 연결
-
-        // 레이아웃 매니저 설정
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
-
-        val jsonString = getJsonDataFromAsset(requireContext(), "phoneNumber.json")
-        val contactList = parseJson(jsonString)
-
-        adapter = ContactAdapter(contactList) // 어댑터 설정
-        recyclerView.adapter = adapter
-
-        return root
+    ): View? {
+        binding = FragmentContactBinding.inflate(inflater, container, false)
+        return binding?.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        initLayout()
+        initListener()
+        onCheckContactsPermission()
+    }
 
-    // JSON 파일 읽기
-    private fun getJsonDataFromAsset(context: Context, fileName: String): String? {
-        val jsonString: String
-        try {
-            val inputStream: InputStream = context.assets.open(fileName)
-            val size: Int = inputStream.available()
-            val buffer = ByteArray(size)
-            inputStream.read(buffer)
-            inputStream.close()
-            jsonString = String(buffer, Charsets.UTF_8)
-        } catch (ioException: IOException) {
-            ioException.printStackTrace()
-            return null
+    override fun onResume() {
+        super.onResume()
+        onCheckContactsPermission()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        binding = null
+    }
+
+    private fun initLayout() {
+        binding?.apply {
+            includeTitle.txtTitle.text = "주소록"
+            btnPermission.setOnClickListener { requestPermission() }
+            btnAddContacts.setOnClickListener { /* 추가 버튼 클릭 시 동작 */ }
         }
-        return jsonString
     }
 
-    // JSON 데이터 파싱
-    private fun parseJson(jsonString: String?): List<Contact> {
-        val contactList = mutableListOf<Contact>()
-        try {
-            val jsonObject = JSONObject(jsonString)
-            val jsonArray = jsonObject.getJSONArray("contacts")
-            for (i in 0 until jsonArray.length()) {
-                val contactObject = jsonArray.getJSONObject(i)
-                val name = contactObject.getString("name")
-                val number = contactObject.getString("number")
-                val contact = Contact(name, number)
-                contactList.add(contact)
+    private fun initListener() {
+        binding?.apply {
+            btnPermission.setOnClickListener { requestPermission() }
+            btnAddContacts.setOnClickListener { /* 추가 버튼 클릭 시 동작 추가 */ }
+        }
+    }
 
+
+    private fun onCheckContactsPermission() {
+        val permissionDenied = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_DENIED ||
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED
+
+        binding?.apply {
+            btnPermission.isVisible = permissionDenied
+            txtDescription.isVisible = permissionDenied
+            btnAddContacts.isVisible = !permissionDenied
+            contactsList.isVisible = !permissionDenied
+
+            if (permissionDenied) {
+                txtDescription.text = "권한을 허용하셔야 이용하실 수 있습니다."
+            } else {
+                getContactsList()
             }
-        } catch (e: JSONException) {
-            e.printStackTrace()
         }
-        return contactList
     }
 
-}
+    private fun requestPermission() {
+        requestPermissions(arrayOf(Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS), PERMISSION_REQUEST_CODE)
+    }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        // 권한 요청 처리
+    }
+
+    private fun getContactsList() {
+        val contacts = requireContext().contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
+        val list = ArrayList<ContactsData>()
+        contacts?.use {
+            while (it.moveToNext()) {
+                val contactsId = it.getInt(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
+                val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val number = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                list.add(ContactsData(contactsId, name, number))
+            }
+        }
+        list.sortBy { it.name }
+        contacts?.close()
+        if (contactsList != list) {
+            contactsList = list
+            setContacts()
+        }
+    }
+
+    private fun setContacts() {
+        contactsAdapter = ContactsAdapter(contactsList)
+        binding?.contactsList?.adapter = contactsAdapter
+    }
+}
