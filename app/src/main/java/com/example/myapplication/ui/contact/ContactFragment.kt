@@ -2,6 +2,7 @@ package com.example.myapplication.ui.contact
 
 import ContactsData
 import android.Manifest
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.ContactsContract
@@ -13,7 +14,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.FragmentContactBinding
 
-class ContactFragment : Fragment() {
+class ContactFragment : Fragment(), View.OnClickListener {
 
     companion object {
         const val PERMISSION_REQUEST_CODE = 100
@@ -22,6 +23,26 @@ class ContactFragment : Fragment() {
     private var binding: FragmentContactBinding? = null
     private var contactsAdapter: ContactsAdapter? = null
     private var contactsList = ArrayList<ContactsData>()
+
+    private val onItemClickListener = object : ContactsAdapter.OnItemClickListener {
+        override fun onItemClickListener(position: Int) {
+            val intent = Intent(requireContext(), ContactsAddEditActivity::class.java)
+                .putExtra("contactsData", contactsList[position])
+            startActivity(intent)
+        }
+    }
+
+    override fun onClick(v: View?) {
+        when (v) {
+            binding?.btnPermission -> {
+                requestPermission()
+            }
+            binding?.btnAddContacts -> {
+                startActivity(Intent(requireContext(), ContactsAddEditActivity::class.java))
+            }
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -52,21 +73,24 @@ class ContactFragment : Fragment() {
         binding?.apply {
             includeTitle.txtTitle.text = "주소록"
             btnPermission.setOnClickListener { requestPermission() }
-            btnAddContacts.setOnClickListener { /* 추가 버튼 클릭 시 동작 */ }
+            btnAddContacts.setOnClickListener(this@ContactFragment)
         }
     }
 
     private fun initListener() {
-        binding?.apply {
-            btnPermission.setOnClickListener { requestPermission() }
-            btnAddContacts.setOnClickListener { /* 추가 버튼 클릭 시 동작 추가 */ }
-        }
+        binding?.btnPermission?.setOnClickListener(this)
+        binding?.btnAddContacts?.setOnClickListener(this)
     }
 
-
     private fun onCheckContactsPermission() {
-        val permissionDenied = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_CONTACTS) == PackageManager.PERMISSION_DENIED ||
-                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_DENIED
+        val permissionDenied = ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.WRITE_CONTACTS
+        ) == PackageManager.PERMISSION_DENIED ||
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.READ_CONTACTS
+                ) == PackageManager.PERMISSION_DENIED
 
         binding?.apply {
             btnPermission.isVisible = permissionDenied
@@ -83,21 +107,40 @@ class ContactFragment : Fragment() {
     }
 
     private fun requestPermission() {
-        requestPermissions(arrayOf(Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_CONTACTS), PERMISSION_REQUEST_CODE)
+        requestPermissions(
+            arrayOf(
+                Manifest.permission.WRITE_CONTACTS,
+                Manifest.permission.READ_CONTACTS
+            ),
+            PERMISSION_REQUEST_CODE
+        )
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        // 권한 요청 처리
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        // Handle permission request results
     }
 
     private fun getContactsList() {
-        val contacts = requireContext().contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
+        val contacts = requireContext().contentResolver.query(
+            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+            null,
+            null,
+            null,
+            null
+        )
         val list = ArrayList<ContactsData>()
         contacts?.use {
             while (it.moveToNext()) {
-                val contactsId = it.getInt(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
-                val name = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-                val number = it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                val contactsId =
+                    it.getInt(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
+                val name =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                val number =
+                    it.getString(it.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
                 list.add(ContactsData(contactsId, name, number))
             }
         }
@@ -110,7 +153,8 @@ class ContactFragment : Fragment() {
     }
 
     private fun setContacts() {
-        contactsAdapter = ContactsAdapter(contactsList)
+        contactsAdapter = ContactsAdapter(contactsList, onItemClickListener)
         binding?.contactsList?.adapter = contactsAdapter
     }
+
 }

@@ -3,33 +3,40 @@ package com.example.myapplication.ui.contact
 import ContactsData
 import android.telephony.PhoneNumberUtils
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.myapplication.R
+import com.example.myapplication.databinding.ItemContactBinding
 import java.util.Locale
 
-class ContactsAdapter(private val contactsList: ArrayList<ContactsData>) : RecyclerView.Adapter<ContactsAdapter.ViewHolder>() {
+class ContactsAdapter(private val contactList: List<ContactsData>, private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_contact, parent, false)
-        return ViewHolder(view)
+    interface OnItemClickListener {
+        fun onItemClickListener(position: Int)
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(contactsList[position])
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ContactViewHolder {
+        val binding = ItemContactBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ContactViewHolder(binding)
     }
 
-    override fun getItemCount() = contactsList.size
+    override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
+        holder.bind(contactList[position])
+    }
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val nameTextView: TextView = itemView.findViewById(R.id.txtName)
-        private val phoneNumberTextView: TextView = itemView.findViewById(R.id.txtPhoneNumber)
+    override fun getItemCount(): Int {
+        return contactList.size
+    }
+
+    inner class ContactViewHolder(private val binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(contact: ContactsData) {
-            nameTextView.text = contact.name
-            phoneNumberTextView.text = PhoneNumberUtils.formatNumber(contact.number, Locale.getDefault().country)
+            binding.txtName.text = contact.name
+            binding.txtPhoneNumber.text = PhoneNumberUtils.formatNumber(contact.number, Locale.getDefault().country)
+
+            itemView.setOnClickListener {
+                onItemClickListener.onItemClickListener(adapterPosition)
+            }
         }
     }
 }
+
