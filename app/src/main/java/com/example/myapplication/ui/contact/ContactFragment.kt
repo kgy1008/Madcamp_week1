@@ -71,7 +71,6 @@ class ContactFragment : Fragment(), View.OnClickListener {
 
     private fun initLayout() {
         binding?.apply {
-            includeTitle.txtTitle.text = "주소록"
             btnPermission.setOnClickListener { requestPermission() }
             btnAddContacts.setOnClickListener(this@ContactFragment)
         }

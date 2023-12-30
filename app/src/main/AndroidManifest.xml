@@ -27,8 +27,10 @@
         </activity>
         <activity
             android:name=".ui.contact.ContactsAddEditActivity"
-            android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:label="연락처 편집"
+        android:exported="false"
+        android:windowSoftInputMode="adjustResize"/>
+
     </application>
 
 </manifest>
