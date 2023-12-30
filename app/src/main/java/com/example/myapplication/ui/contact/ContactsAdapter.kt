@@ -39,4 +39,3 @@ class ContactsAdapter(private val contactList: List<ContactsData>, private val o
         }
     }
 }
-

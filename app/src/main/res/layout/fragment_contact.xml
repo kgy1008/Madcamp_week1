@@ -47,9 +47,9 @@
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/btnAddContacts"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_margin="20dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_margin="10dp"
         android:text="+"
         android:textColor="#DDDDDD"
         android:textSize="26dp"
