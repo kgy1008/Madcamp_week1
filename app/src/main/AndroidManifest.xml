@@ -18,6 +18,7 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -28,13 +29,14 @@
         <activity
             android:name=".ui.contact.ContactsEditActivity"
             android:label="연락처 편집"
-        android:exported="false"
-        android:windowSoftInputMode="adjustResize"/>
+            android:exported="false"
+            android:windowSoftInputMode="stateHidden" />
+
         <activity
             android:name=".ui.contact.ContactsAddActivity"
             android:label="연락처 추가"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="stateHidden"/>
 
     </application>
 
