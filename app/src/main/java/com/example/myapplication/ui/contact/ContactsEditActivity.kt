@@ -10,12 +10,12 @@ import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.myapplication.databinding.ActivityContactsAddEditBinding
+import com.example.myapplication.databinding.ActivityContactsEditBinding
 import kotlin.collections.ArrayList
 
 class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
 
-    private val binding by lazy { ActivityContactsAddEditBinding.inflate(layoutInflater) }
+    private val binding by lazy { ActivityContactsEditBinding.inflate(layoutInflater) }
     private var isEditMode = false
     private var contacts: ContactsData? = null
 
@@ -26,7 +26,7 @@ class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatc
                     setEditContacts()
                 }
             }
-            binding.btnCancel -> {
+            binding.btnDelete -> {
                 finish()
             }
         }
@@ -66,7 +66,7 @@ class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatc
 
     private fun initListener() {
         binding.btnSave.setOnClickListener(this)
-        binding.btnCancel.setOnClickListener(this)
+        binding.btnDelete.setOnClickListener(this)
         binding.editNumber.addTextChangedListener(PhoneNumberFormattingTextWatcher())
         binding.editNumber.addTextChangedListener(this)
         binding.editName.addTextChangedListener(this)

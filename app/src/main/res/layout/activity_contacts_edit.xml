@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
-            android:hint="이름을 입력하세요"
+            android:hint="수정할 이름을 입력하세요"
             android:maxLines="1" />
     </LinearLayout>
 
@@ -55,7 +55,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:layout_weight="1"
-            android:hint="번호를 입력하세요"
+            android:hint="수정할 번호를 입력하세요"
             android:inputType="phone"
             android:maxLines="1" />
     </LinearLayout>
@@ -66,17 +66,18 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnCancel"
+            android:id="@+id/btnDelete"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="취소" />
+            android:text="삭제" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSave"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="저장" />
+            android:text="저장"
+            android:onClick="onSaveClicked"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

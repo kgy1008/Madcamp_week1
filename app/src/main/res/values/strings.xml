@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">MadCamp</string>
     <string name="title_contact">연락처</string>
     <string name="title_gallery">갤러리</string>
     <string name="title_notifications">Notifications</string>
