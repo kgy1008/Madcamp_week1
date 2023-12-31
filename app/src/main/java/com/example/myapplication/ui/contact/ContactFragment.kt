@@ -13,6 +13,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.FragmentContactBinding
+import android.text.Editable
+import android.text.TextWatcher
 
 class ContactFragment : Fragment(), View.OnClickListener {
 
@@ -57,6 +59,26 @@ class ContactFragment : Fragment(), View.OnClickListener {
         initLayout()
         initListener()
         onCheckContactsPermission()
+
+        // Adapter 초기화
+        contactsAdapter = ContactsAdapter(contactsList, contactsList, onItemClickListener)
+        binding?.contactsList?.adapter = contactsAdapter
+
+        // EditText에 텍스트 변경 감지를 위한 TextWatcher 추가
+        binding?.editTextSearch?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // 필요 없는 메소드, 여기에서는 사용하지 않음
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // 필요 없는 메소드, 여기에서는 사용하지 않음
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                // EditText의 텍스트가 변경될 때마다 호출되는 부분
+                filterContacts(s.toString()) // 검색어에 따라 연락처 필터링
+            }
+        })
     }
 
     override fun onResume() {
@@ -152,8 +174,19 @@ class ContactFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setContacts() {
-        contactsAdapter = ContactsAdapter(contactsList, onItemClickListener)
+        contactsAdapter = ContactsAdapter(contactsList, contactsList, onItemClickListener)
         binding?.contactsList?.adapter = contactsAdapter
     }
 
+    private fun filterContacts(query: String) {
+        val filteredList = ArrayList<ContactsData>()
+
+        for (contact in contactsList) {
+            if (query.isEmpty() || contact.name.contains(query, ignoreCase = true)) {
+                filteredList.add(contact)
+            }
+        }
+
+        contactsAdapter?.filterList(filteredList)
+    }
 }

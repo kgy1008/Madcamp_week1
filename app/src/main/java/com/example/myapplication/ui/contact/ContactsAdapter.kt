@@ -6,9 +6,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.databinding.ItemContactBinding
-import java.util.Locale
+import java.util.*
 
-class ContactsAdapter(private val contactList: List<ContactsData>, private val onItemClickListener: OnItemClickListener) : RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
+class ContactsAdapter(
+    private var originalContactList: List<ContactsData>,
+    private var displayedContactList: List<ContactsData>,
+    private val onItemClickListener: OnItemClickListener
+) : RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
 
     interface OnItemClickListener {
         fun onItemClickListener(position: Int)
@@ -20,11 +24,11 @@ class ContactsAdapter(private val contactList: List<ContactsData>, private val o
     }
 
     override fun onBindViewHolder(holder: ContactViewHolder, position: Int) {
-        holder.bind(contactList[position])
+        holder.bind(displayedContactList[position])
     }
 
     override fun getItemCount(): Int {
-        return contactList.size
+        return displayedContactList.size
     }
 
     inner class ContactViewHolder(private val binding: ItemContactBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -37,5 +41,10 @@ class ContactsAdapter(private val contactList: List<ContactsData>, private val o
                 onItemClickListener.onItemClickListener(adapterPosition)
             }
         }
+    }
+
+    fun filterList(filteredList: List<ContactsData>) {
+        displayedContactList = filteredList
+        notifyDataSetChanged()
     }
 }
