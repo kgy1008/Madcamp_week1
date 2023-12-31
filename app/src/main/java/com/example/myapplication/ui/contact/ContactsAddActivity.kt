@@ -16,7 +16,6 @@ import kotlin.collections.ArrayList
 class ContactsAddActivity : AppCompatActivity(), View.OnClickListener {
 
     private val binding by lazy { ActivityContactsAddBinding.inflate(layoutInflater) }
-    private var isEditMode = false
     private var contacts: ContactsData? = null
 
     override fun onClick(v: View?) {
@@ -40,7 +39,6 @@ class ContactsAddActivity : AppCompatActivity(), View.OnClickListener {
     private fun initData() {
         intent.getParcelableExtra<ContactsData>("contactsData")?.let {
             contacts = it
-            isEditMode = true
         }
     }
 

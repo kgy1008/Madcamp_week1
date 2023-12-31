@@ -16,18 +16,15 @@ import kotlin.collections.ArrayList
 class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatcher {
 
     private val binding by lazy { ActivityContactsEditBinding.inflate(layoutInflater) }
-    private var isEditMode = false
     private var contacts: ContactsData? = null
 
     override fun onClick(v: View?) {
         when (v) {
-            binding.btnSave -> {
-                if (isEditMode) {
-                    setEditContacts()
-                }
+            binding.btnEdit -> {
+                setEditContacts()
             }
             binding.btnDelete -> {
-                finish()
+                deleteContact()
             }
         }
     }
@@ -51,21 +48,17 @@ class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatc
     private fun initData() {
         intent.getParcelableExtra<ContactsData>("contactsData")?.let {
             contacts = it
-            isEditMode = true
         }
     }
 
     private fun initLayout() {
         setContentView(binding.root)
-
-        if (isEditMode) {
-            binding.editName.setText(contacts?.name)
-            binding.editNumber.setText(contacts?.number)
-        }
+        binding.editName.setText(contacts?.name)
+        binding.editNumber.setText(contacts?.number)
     }
 
     private fun initListener() {
-        binding.btnSave.setOnClickListener(this)
+        binding.btnEdit.setOnClickListener(this)
         binding.btnDelete.setOnClickListener(this)
         binding.editNumber.addTextChangedListener(PhoneNumberFormattingTextWatcher())
         binding.editNumber.addTextChangedListener(this)
@@ -105,6 +98,25 @@ class ContactsEditActivity : AppCompatActivity(), View.OnClickListener, TextWatc
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(this, "연락처 수정에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+        }
+
+        finish()
+    }
+
+    private fun deleteContact() {
+        val where = "${ContactsContract.Data.CONTACT_ID}=?"
+        val whereArgs = arrayOf(contacts?.contactsId.toString())
+
+        try {
+            contentResolver.delete(
+                ContactsContract.RawContacts.CONTENT_URI,
+                where,
+                whereArgs
+            )
+            Toast.makeText(this, "연락처가 삭제되었습니다.", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "연락처 삭제에 실패하였습니다.", Toast.LENGTH_SHORT).show()
         }
 
         finish()
