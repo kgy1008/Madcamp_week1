@@ -17,7 +17,6 @@ import com.example.myapplication.databinding.FragmentContactBinding
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.inputmethod.InputMethodManager
-import com.google.android.material.internal.ViewUtils.hideKeyboard
 
 class ContactFragment : Fragment(), View.OnClickListener {
 
@@ -86,6 +85,8 @@ class ContactFragment : Fragment(), View.OnClickListener {
         binding?.btnClearSearch?.setOnClickListener {
             binding?.editTextSearch?.setText("")
             hideKeyboard()
+            binding?.editTextSearch?.clearFocus()
+            binding?.btnClearSearch?.isVisible = false // Clear 버튼을 숨김
         }
 
         binding?.btnClearImage?.setOnClickListener {
@@ -93,7 +94,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
         }
 
         binding?.editTextSearch?.setOnFocusChangeListener { _, hasFocus ->
-            showCancelButton(hasFocus && !binding?.editTextSearch?.text.isNullOrEmpty())
+            showCancelButton(hasFocus)
         }
 
         binding?.btnClearSearch?.isVisible = false
