@@ -2,6 +2,7 @@ package com.example.myapplication.ui.contact
 
 import ContactsData
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -15,6 +16,8 @@ import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.FragmentContactBinding
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.InputMethodManager
+import com.google.android.material.internal.ViewUtils.hideKeyboard
 
 class ContactFragment : Fragment(), View.OnClickListener {
 
@@ -44,7 +47,6 @@ class ContactFragment : Fragment(), View.OnClickListener {
             }
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -77,14 +79,19 @@ class ContactFragment : Fragment(), View.OnClickListener {
             override fun afterTextChanged(s: Editable?) {
                 // EditText의 텍스트가 변경될 때마다 호출되는 부분
                 filterContacts(s.toString()) // 검색어에 따라 연락처 필터링
-                binding?.btnClearSearch?.isVisible = !s.isNullOrEmpty()
             }
         })
         binding?.btnClearSearch?.setOnClickListener {
             binding?.editTextSearch?.setText("")
+            hideKeyboard()
         }
 
         binding?.btnClearSearch?.isVisible = false
+    }
+
+    private fun hideKeyboard() {
+        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 
     override fun onResume() {
@@ -106,7 +113,17 @@ class ContactFragment : Fragment(), View.OnClickListener {
         binding?.apply {
             btnPermission.setOnClickListener { requestPermission() }
             btnAddContacts.setOnClickListener(this@ContactFragment)
+
+            editTextSearch.setOnFocusChangeListener { _, hasFocus ->
+                if (hasFocus) {
+                    showCancelButton(true)
+                }
+            }
         }
+    }
+
+    private fun showCancelButton(show: Boolean) {
+        binding?.btnClearSearch?.isVisible = show || !binding?.editTextSearch?.text.isNullOrEmpty()
     }
 
     private fun initListener() {
