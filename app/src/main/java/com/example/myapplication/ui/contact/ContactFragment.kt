@@ -66,6 +66,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
         contactsAdapter = ContactsAdapter(contactsList, contactsList, onItemClickListener)
         binding?.contactsList?.adapter = contactsAdapter
 
+
         // EditText에 텍스트 변경 감지를 위한 TextWatcher 추가
         binding?.editTextSearch?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -77,6 +78,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
             }
 
             override fun afterTextChanged(s: Editable?) {
+                showCancelButton(!s.isNullOrEmpty())
                 // EditText의 텍스트가 변경될 때마다 호출되는 부분
                 filterContacts(s.toString()) // 검색어에 따라 연락처 필터링
             }
@@ -90,6 +92,10 @@ class ContactFragment : Fragment(), View.OnClickListener {
             binding?.editTextSearch?.setText("")
         }
 
+        binding?.editTextSearch?.setOnFocusChangeListener { _, hasFocus ->
+            showCancelButton(hasFocus && !binding?.editTextSearch?.text.isNullOrEmpty())
+        }
+
         binding?.btnClearSearch?.isVisible = false
         binding?.btnClearImage?.isVisible = false
     }
@@ -98,7 +104,6 @@ class ContactFragment : Fragment(), View.OnClickListener {
         val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
         binding?.editTextSearch?.clearFocus()
-        showCancelButton(false)
     }
 
     override fun onResume() {
@@ -130,8 +135,8 @@ class ContactFragment : Fragment(), View.OnClickListener {
     }
 
     private fun showCancelButton(show: Boolean) {
-        binding?.btnClearSearch?.isVisible = show || !binding?.editTextSearch?.text.isNullOrEmpty()
-        binding?.btnClearImage?.isVisible = show || !binding?.editTextSearch?.text.isNullOrEmpty()
+        binding?.btnClearSearch?.isVisible = show
+        binding?.btnClearImage?.isVisible = show
     }
 
     private fun initListener() {
