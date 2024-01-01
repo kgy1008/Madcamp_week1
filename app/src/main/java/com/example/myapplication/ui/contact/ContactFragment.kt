@@ -52,6 +52,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentContactBinding.inflate(inflater, container, false)
+        binding?.btnClearImage?.isVisible = false
         return binding?.root
     }
 
@@ -82,12 +83,6 @@ class ContactFragment : Fragment(), View.OnClickListener {
                 filterContacts(s.toString()) // 검색어에 따라 연락처 필터링
             }
         })
-        binding?.btnClearSearch?.setOnClickListener {
-            binding?.editTextSearch?.setText("")
-            hideKeyboard()
-            binding?.editTextSearch?.clearFocus()
-            binding?.btnClearSearch?.isVisible = false // Clear 버튼을 숨김
-        }
 
         binding?.btnClearImage?.setOnClickListener {
             binding?.editTextSearch?.setText("")
@@ -96,20 +91,12 @@ class ContactFragment : Fragment(), View.OnClickListener {
         binding?.editTextSearch?.setOnFocusChangeListener { _, hasFocus ->
             showCancelButton(hasFocus)
         }
-
-        binding?.btnClearSearch?.isVisible = false
         binding?.btnClearImage?.isVisible = false
     }
-
-    private fun hideKeyboard() {
-        val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view?.windowToken, 0)
-        binding?.editTextSearch?.clearFocus()
-    }
-
     override fun onResume() {
         super.onResume()
         onCheckContactsPermission()
+        binding?.btnClearImage?.isVisible = false
     }
 
     override fun onDestroyView() {
@@ -136,7 +123,6 @@ class ContactFragment : Fragment(), View.OnClickListener {
     }
 
     private fun showCancelButton(show: Boolean) {
-        binding?.btnClearSearch?.isVisible = show
         binding?.btnClearImage?.isVisible = show
     }
 
