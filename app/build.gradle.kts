@@ -39,6 +39,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        mlModelBinding = true
     }
 }
 
@@ -59,6 +60,9 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.3.0")
     implementation("com.google.code.gson:gson:2.8.8")
     implementation("com.jsibbold:zoomage:1.3.1")
+    implementation("org.tensorflow:tensorflow-lite-support:0.1.0")
+    implementation("org.tensorflow:tensorflow-lite-metadata:0.1.0")
+
 
 
 
