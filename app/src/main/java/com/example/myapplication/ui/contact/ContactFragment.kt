@@ -86,7 +86,12 @@ class ContactFragment : Fragment(), View.OnClickListener {
             hideKeyboard()
         }
 
+        binding?.btnClearImage?.setOnClickListener {
+            binding?.editTextSearch?.setText("")
+        }
+
         binding?.btnClearSearch?.isVisible = false
+        binding?.btnClearImage?.isVisible = false
     }
 
     private fun hideKeyboard() {
@@ -126,6 +131,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
 
     private fun showCancelButton(show: Boolean) {
         binding?.btnClearSearch?.isVisible = show || !binding?.editTextSearch?.text.isNullOrEmpty()
+        binding?.btnClearImage?.isVisible = show || !binding?.editTextSearch?.text.isNullOrEmpty()
     }
 
     private fun initListener() {
