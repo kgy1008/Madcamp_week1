@@ -1,24 +1,33 @@
 package com.example.myapplication.ui.gallery
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myapplication.databinding.FragmentGalleryBinding
 import com.example.myapplication.R
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+
 class ImageFragment : Fragment() {
     private lateinit var imageAdapter: ImageAdapter
 
@@ -39,8 +48,11 @@ class ImageFragment : Fragment() {
 
     //save
     private val IMAGES_KEY = "images_key"
+    private lateinit var sharedPreferences: SharedPreferences
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        //val imageJson = Gson().toJson(images)
+        //sharedPreferences.edit().putString(IMAGES_KEY, imageJson).apply()
         outState.putParcelableArrayList(IMAGES_KEY, images)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,9 +60,9 @@ class ImageFragment : Fragment() {
         savedInstanceState?.let {
             images = it.getParcelableArrayList(IMAGES_KEY) ?: ArrayList()
         }
+        //
+        //imageAdapter = ImageAdapter(requireContext(), images)
     }
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,10 +72,21 @@ class ImageFragment : Fragment() {
         _binding = FragmentGalleryBinding.inflate(inflater, container, false)
         val root: View = binding.root
         val recyclerView = binding.recyclerView
+
+        //restore
+        /*sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
+        val savedImagesJson = sharedPreferences.getString(IMAGES_KEY, null)
+        savedImagesJson?.let {
+            val type = object : TypeToken<ArrayList<Image>>() {}.type
+            images = Gson().fromJson(it, type)
+            imageAdapter.notifyDataSetChanged()
+        }*/
+
         //check box
         radioGroup = binding.radioGroup
         check2 = binding.check2
         check3 = binding.check3
+
         //initial status of grid number
         gridLayoutManager = GridLayoutManager(requireContext(),2)
         recyclerView.layoutManager = gridLayoutManager
@@ -98,6 +121,7 @@ class ImageFragment : Fragment() {
             activityResult.launch(intent)
         }
 
+        //detailed additional window
         imageAdapter.onItemClick = {
             val intent = Intent(requireContext(), DetailedActivity::class.java)
             intent.putExtra("image", it)
@@ -106,12 +130,14 @@ class ImageFragment : Fragment() {
         return root
     }
 
-    //get adapter
-
 
     private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) {
+
+        //for printing repeat message one time
+        var isrepeat = false
+
         if (it.resultCode == Activity.RESULT_OK) {
             if (it.data!!.clipData != null) {
                 val count = it.data!!.clipData!!.itemCount
@@ -120,7 +146,7 @@ class ImageFragment : Fragment() {
                     if (!isImageAlreadyAdded(imageUri)) {
                         images.add(Image(imageUri))
                     } else {
-                        showToast("중복되는 사진은 제외됐습니다")
+                        isrepeat = true
                     }
                 }
             } else {
@@ -128,9 +154,13 @@ class ImageFragment : Fragment() {
                 if (!isImageAlreadyAdded(imageUri)) {
                     images.add(Image(imageUri!!))
                 } else {
-                    showToast("중복되는 사진은 제외됐습니다")
+                    isrepeat = true
                 }
             }
+            if (isrepeat) {
+                showToast("중복되는 사진은 제외됐습니다")
+            }
+
             imageAdapter.notifyDataSetChanged()
         }
     }
@@ -158,6 +188,12 @@ class ImageFragment : Fragment() {
         imageAdapter.notifyDataSetChanged()
     }
 
+    //save to restore
+    /*override fun onPause() {
+        super.onPause()
 
-
+        val imagesJson = Gson().toJson(images)
+        sharedPreferences.edit().putString(IMAGES_KEY, imagesJson).apply()
+    }
+*/
 }
