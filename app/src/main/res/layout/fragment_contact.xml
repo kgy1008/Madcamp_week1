@@ -14,14 +14,24 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:drawableLeft="@drawable/ic_search"
-        android:drawableRight="@drawable/ic_clear"
-        android:drawablePadding="8dp"
         android:hint="검색"
         android:inputType="text"
         app:layout_constraintEnd_toStartOf="@id/btnClearSearch"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <!-- 'X' 이미지를 나타내는 버튼 -->
+    <ImageButton
+        android:id="@+id/btnClearImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:src="@drawable/ic_clear"
+        app:layout_constraintBottom_toBottomOf="@id/editTextSearch"
+        app:layout_constraintEnd_toStartOf="@id/btnClearSearch"
+        app:layout_constraintTop_toTopOf="@id/editTextSearch" />
+
+    <!-- 기존 취소 버튼 -->
     <Button
         android:id="@+id/btnClearSearch"
         android:layout_width="wrap_content"
@@ -33,7 +43,6 @@
         app:layout_constraintBottom_toBottomOf="@id/editTextSearch"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/editTextSearch" />
-
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/contactsList"
