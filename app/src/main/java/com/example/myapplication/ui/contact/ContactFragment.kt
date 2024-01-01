@@ -92,6 +92,8 @@ class ContactFragment : Fragment(), View.OnClickListener {
     private fun hideKeyboard() {
         val imm = requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
+        binding?.editTextSearch?.clearFocus()
+        showCancelButton(false)
     }
 
     override fun onResume() {
