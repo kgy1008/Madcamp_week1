@@ -77,8 +77,14 @@ class ContactFragment : Fragment(), View.OnClickListener {
             override fun afterTextChanged(s: Editable?) {
                 // EditText의 텍스트가 변경될 때마다 호출되는 부분
                 filterContacts(s.toString()) // 검색어에 따라 연락처 필터링
+                binding?.btnClearSearch?.isVisible = !s.isNullOrEmpty()
             }
         })
+        binding?.btnClearSearch?.setOnClickListener {
+            binding?.editTextSearch?.setText("")
+        }
+
+        binding?.btnClearSearch?.isVisible = false
     }
 
     override fun onResume() {
@@ -89,6 +95,11 @@ class ContactFragment : Fragment(), View.OnClickListener {
     override fun onDestroyView() {
         super.onDestroyView()
         binding = null
+    }
+
+    override fun onPause() {
+        super.onPause()
+        binding?.editTextSearch?.setText("") // 다른 Fragment로 이동 시 EditText 내용 지우기
     }
 
     private fun initLayout() {
