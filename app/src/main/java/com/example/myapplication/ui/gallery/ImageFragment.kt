@@ -1,19 +1,13 @@
 package com.example.myapplication.ui.gallery
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
-import android.os.Parcelable
 import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.ScaleGestureDetector
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CheckBox
-import android.widget.ImageView
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
@@ -21,12 +15,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.myapplication.databinding.FragmentGalleryBinding
-import com.example.myapplication.R
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class ImageFragment : Fragment() {
     private lateinit var imageAdapter: ImageAdapter
@@ -48,20 +37,21 @@ class ImageFragment : Fragment() {
 
     //save
     private val IMAGES_KEY = "images_key"
-    private lateinit var sharedPreferences: SharedPreferences
+    private val imageViewModel: ImageViewModel by activityViewModels()
+
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        //val imageJson = Gson().toJson(images)
-        //sharedPreferences.edit().putString(IMAGES_KEY, imageJson).apply()
-        outState.putParcelableArrayList(IMAGES_KEY, images)
+        imageViewModel.images = images
+        //outState.putParcelableArrayList(IMAGES_KEY, images)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        savedInstanceState?.let {
-            images = it.getParcelableArrayList(IMAGES_KEY) ?: ArrayList()
+        if (savedInstanceState == null) {
+            images = imageViewModel.images
         }
-        //
-        //imageAdapter = ImageAdapter(requireContext(), images)
+        /*savedInstanceState?.let {
+            images = it.getParcelableArrayList(IMAGES_KEY) ?: ArrayList()
+        }*/
     }
 
     override fun onCreateView(
@@ -73,14 +63,8 @@ class ImageFragment : Fragment() {
         val root: View = binding.root
         val recyclerView = binding.recyclerView
 
-        //restore
-        /*sharedPreferences = requireActivity().getPreferences(Context.MODE_PRIVATE)
-        val savedImagesJson = sharedPreferences.getString(IMAGES_KEY, null)
-        savedImagesJson?.let {
-            val type = object : TypeToken<ArrayList<Image>>() {}.type
-            images = Gson().fromJson(it, type)
-            imageAdapter.notifyDataSetChanged()
-        }*/
+        //save
+        images = imageViewModel.images
 
         //check box
         radioGroup = binding.radioGroup
@@ -188,12 +172,5 @@ class ImageFragment : Fragment() {
         imageAdapter.notifyDataSetChanged()
     }
 
-    //save to restore
-    /*override fun onPause() {
-        super.onPause()
 
-        val imagesJson = Gson().toJson(images)
-        sharedPreferences.edit().putString(IMAGES_KEY, imagesJson).apply()
-    }
-*/
 }
