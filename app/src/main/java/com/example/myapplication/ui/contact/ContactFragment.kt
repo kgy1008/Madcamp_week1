@@ -61,7 +61,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
         onCheckContactsPermission()
 
         // Adapter 초기화
-        contactsAdapter = ContactsAdapter(contactsList, contactsList, onItemClickListener)
+        contactsAdapter = ContactsAdapter(contactsList, onItemClickListener)
         binding?.contactsList?.adapter = contactsAdapter
 
 
@@ -210,7 +210,7 @@ class ContactFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setContacts() {
-        contactsAdapter = ContactsAdapter(contactsList, contactsList, onItemClickListener)
+        contactsAdapter = ContactsAdapter(contactsList, onItemClickListener)
         binding?.contactsList?.adapter = contactsAdapter
     }
 

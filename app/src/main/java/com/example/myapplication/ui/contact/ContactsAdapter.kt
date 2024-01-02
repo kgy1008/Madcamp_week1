@@ -9,7 +9,6 @@ import com.example.myapplication.databinding.ItemContactBinding
 import java.util.*
 
 class ContactsAdapter(
-    private var originalContactList: List<ContactsData>,
     private var displayedContactList: List<ContactsData>,
     private val onItemClickListener: OnItemClickListener
 ) : RecyclerView.Adapter<ContactsAdapter.ContactViewHolder>() {
