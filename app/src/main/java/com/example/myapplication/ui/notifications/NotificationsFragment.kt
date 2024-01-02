@@ -1,9 +1,8 @@
 package com.example.myapplication.ui.notifications
+
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.media.ThumbnailUtils
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,8 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -28,17 +27,26 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 class NotificationsFragment : Fragment() {
 
     private var _binding: FragmentNotificationsBinding? = null
-    lateinit var selectBtn: Button
-    lateinit var predBtn: Button
-    lateinit var resView: TextView
-    lateinit var testImage: ImageView
-    lateinit var bitmap: Bitmap
-
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-    lateinit var notificationsViewModel: NotificationsViewModel
+
+    private lateinit var selectBtn: Button
+    private lateinit var predBtn: Button
+    private lateinit var permBtn: Button
+    private lateinit var resView: TextView
+    private lateinit var testImage: ImageView
+    private lateinit var myLinearLayout: LinearLayout
+
+    private var isLinearLayoutVisible = false
+    private lateinit var bitmap: Bitmap
+
+    private val activityResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+            if (it.resultCode == Activity.RESULT_OK && it.data != null) {
+                val extras = it.data!!.extras
+                bitmap = extras?.get("data") as Bitmap
+                binding.testImage.setImageBitmap(bitmap)
+            }
+        }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,40 +56,53 @@ class NotificationsFragment : Fragment() {
         _binding = FragmentNotificationsBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        notificationsViewModel =
+        val notificationsViewModel =
             ViewModelProvider(this).get(NotificationsViewModel::class.java)
 
         // 뷰바인딩을 사용하여 뷰 참조
-        val selectBtn: Button = binding.selectBtn
-        val predBtn: Button = binding.predictBtn
-        val resView: TextView = binding.resView
-        val testImage: ImageView = binding.testImage
+        selectBtn = binding.selectBtn
+        predBtn = binding.predictBtn
+        resView = binding.resView
+        testImage = binding.testImage
+        permBtn = root.findViewById(R.id.permButton)
+        myLinearLayout = root.findViewById(R.id.llayout)
 
-        var imageProcessor = ImageProcessor.Builder()
-            //.add(NormalizeOp(0.0f, 255.0f))
-            //.add(TransformToGrayscaleOp())
+        // 복원
+        if (savedInstanceState != null) {
+            isLinearLayoutVisible =
+                savedInstanceState.getBoolean("isLinearLayoutVisible", false)
+            updateLinearLayoutVisibility()
+        }
+
+
+
+        val imageProcessor = ImageProcessor.Builder()
             .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR))
             .build()
 
-        //사진 선택 버튼
-        selectBtn.setOnClickListener {
-            bitmap = BitmapFactory.decodeResource(resources, R.drawable.b)
-            testImage.setImageBitmap(bitmap)
-            //val intent: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            //activityResult.launch(intent)
+        permBtn.setOnClickListener {
+            isLinearLayoutVisible = true
+            updateLinearLayoutVisibility()
         }
 
-        //분석 시작 버튼
+        // 사진 선택 버튼
+        selectBtn.setOnClickListener {
+            val intent: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            activityResult.launch(intent)
+        }
+
+        // 분석 시작 버튼
         predBtn.setOnClickListener {
 
-            //이미지 전처리 과정
+            // 이미지 전처리 과정
             var tensorImage = TensorImage(DataType.FLOAT32)
             tensorImage.load(bitmap)
 
             tensorImage = imageProcessor.process(tensorImage)
 
             val model = ModelUnquant.newInstance(requireContext())
-            val inputFeature0 = TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
+            val inputFeature0 =
+                TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
             inputFeature0.loadBuffer(tensorImage.buffer)
 
             val outputs = model.process(inputFeature0)
@@ -107,17 +128,19 @@ class NotificationsFragment : Fragment() {
         return root
     }
 
-    /*private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) {
+    private fun updateLinearLayoutVisibility() {
+        myLinearLayout.visibility = if (isLinearLayoutVisible) View.VISIBLE else View.GONE
+        permBtn.visibility = if (isLinearLayoutVisible) View.GONE else View.VISIBLE
+    }
 
-        if(it.resultCode == Activity.RESULT_OK && it.data != null) {
-            val extras = it.data!!.extras
-            bitmap = extras?.get("data") as Bitmap
-            testImage.setImageBitmap(bitmap)
-        }
-    }*/
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        // 현재 LinearLayout의 가시성 상태를 저장
+        outState.putBoolean("isLinearLayoutVisible", isLinearLayoutVisible)
+    }
 
-
-
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 }
