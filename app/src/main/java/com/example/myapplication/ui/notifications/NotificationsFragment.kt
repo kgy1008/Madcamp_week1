@@ -107,22 +107,17 @@ class NotificationsFragment : Fragment() {
     }
 
     private fun checkPermissionAndSelectImage() {
-        when {
-            ContextCompat.checkSelfPermission(
+        if (ContextCompat.checkSelfPermission(
                 requireContext(),
                 Manifest.permission.READ_EXTERNAL_STORAGE
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                openImageSelection()
-            }
-            shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE) -> {
-                showPermissionAlertDialog()
-            }
-            else -> {
-                requestPermissions(
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    PERMISSION_CODE_GALLERY
-                )
-            }
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            openImageSelection()
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                PERMISSION_CODE_GALLERY
+            )
         }
     }
 
@@ -163,7 +158,7 @@ class NotificationsFragment : Fragment() {
     private fun goSettingActivityAlertDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle("권한 승인이 필요합니다.")
-            .setMessage("앨범에 접근하기 위한 권한이 필요합니다.\n권한 -> 앨범 접근 허용")
+            .setMessage("앨범에 접근하기 위한 권한이 필요합니다.\n권한 -> 사진 및 동영상 접근 허용")
             .setPositiveButton("허용하러 가기") { _, _ ->
                 val goSettingPermission = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
                 goSettingPermission.data = Uri.parse("package:${requireContext().packageName}")
