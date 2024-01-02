@@ -109,13 +109,13 @@ class NotificationsFragment : Fragment() {
     private fun checkPermissionAndSelectImage() {
         if (ContextCompat.checkSelfPermission(
                 requireContext(),
-                Manifest.permission.READ_EXTERNAL_STORAGE
+                Manifest.permission.READ_MEDIA_IMAGES
             ) == PackageManager.PERMISSION_GRANTED
         ) {
             openImageSelection()
         } else {
             requestPermissions(
-                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
                 PERMISSION_CODE_GALLERY
             )
         }
@@ -127,7 +127,7 @@ class NotificationsFragment : Fragment() {
             .setMessage("사진을 선택하려면 권한이 필요합니다.")
             .setPositiveButton("허용하기") { _, _ ->
                 requestPermissions(
-                    arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
                     PERMISSION_CODE_GALLERY
                 )
             }
@@ -146,7 +146,7 @@ class NotificationsFragment : Fragment() {
             PERMISSION_CODE_GALLERY -> {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     openImageSelection()
-                } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES)) {
                     showPermissionAlertDialog()
                 } else {
                     goSettingActivityAlertDialog()
