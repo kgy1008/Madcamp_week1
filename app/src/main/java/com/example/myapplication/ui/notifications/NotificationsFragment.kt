@@ -72,9 +72,6 @@ class NotificationsFragment : Fragment() {
             intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             activityResult.launch(intent)
 
-
-
-
         }
 
         // 분석 시작 버튼
@@ -140,11 +137,7 @@ class NotificationsFragment : Fragment() {
 
         }
     }
-
-
 }
-
-
 
 
 
