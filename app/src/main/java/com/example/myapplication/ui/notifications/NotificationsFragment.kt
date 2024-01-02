@@ -3,6 +3,7 @@ package com.example.myapplication.ui.notifications
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -12,12 +13,14 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.ml.ModelUnquant
+import com.example.myapplication.ui.gallery.Image
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -31,22 +34,13 @@ class NotificationsFragment : Fragment() {
 
     private lateinit var selectBtn: Button
     private lateinit var predBtn: Button
-    private lateinit var permBtn: Button
     private lateinit var resView: TextView
     private lateinit var testImage: ImageView
-    private lateinit var myLinearLayout: LinearLayout
 
-    private var isLinearLayoutVisible = false
     private lateinit var bitmap: Bitmap
+    var images: ArrayList<Image> = ArrayList()
 
-    private val activityResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            if (it.resultCode == Activity.RESULT_OK && it.data != null) {
-                val extras = it.data!!.extras
-                bitmap = extras?.get("data") as Bitmap
-                binding.testImage.setImageBitmap(bitmap)
-            }
-        }
+
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -64,31 +58,23 @@ class NotificationsFragment : Fragment() {
         predBtn = binding.predictBtn
         resView = binding.resView
         testImage = binding.testImage
-        permBtn = root.findViewById(R.id.permButton)
-        myLinearLayout = root.findViewById(R.id.llayout)
-
-        // 복원
-        if (savedInstanceState != null) {
-            isLinearLayoutVisible =
-                savedInstanceState.getBoolean("isLinearLayoutVisible", false)
-            updateLinearLayoutVisibility()
-        }
-
-
 
         val imageProcessor = ImageProcessor.Builder()
             .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR))
             .build()
 
-        permBtn.setOnClickListener {
-            isLinearLayoutVisible = true
-            updateLinearLayoutVisibility()
-        }
-
         // 사진 선택 버튼
         selectBtn.setOnClickListener {
-            val intent: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            /*val intent: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            activityResult.launch(intent)*/
+            val intent = Intent(Intent.ACTION_PICK)
+            intent.type = "image/*"
+            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             activityResult.launch(intent)
+
+
+
+
         }
 
         // 분석 시작 버튼
@@ -127,20 +113,38 @@ class NotificationsFragment : Fragment() {
 
         return root
     }
+    private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) {
 
-    private fun updateLinearLayoutVisibility() {
-        myLinearLayout.visibility = if (isLinearLayoutVisible) View.VISIBLE else View.GONE
-        permBtn.visibility = if (isLinearLayoutVisible) View.GONE else View.VISIBLE
+        //for printing repeat message one time
+        var isrepeat = false
+
+        if (it.resultCode == Activity.RESULT_OK) {
+            if (it.data!!.clipData != null) {
+                val count = it.data!!.clipData!!.itemCount
+                for (index in 0 until count) {
+                    val imageUri = it.data!!.clipData!!.getItemAt(index).uri
+                    bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
+                    testImage.setImageBitmap(bitmap)
+
+
+                }
+            } else {
+                val imageUri = it.data!!.data
+                bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
+                testImage.setImageBitmap(bitmap)
+
+            }
+
+
+        }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        // 현재 LinearLayout의 가시성 상태를 저장
-        outState.putBoolean("isLinearLayoutVisible", isLinearLayoutVisible)
-    }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
 }
+
+
+
+
+

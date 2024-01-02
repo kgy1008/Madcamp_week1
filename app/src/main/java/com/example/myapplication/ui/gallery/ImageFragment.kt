@@ -170,4 +170,3 @@ class ImageFragment : Fragment() {
 
 
 }
-
