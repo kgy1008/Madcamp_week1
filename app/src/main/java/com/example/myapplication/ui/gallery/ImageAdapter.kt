@@ -46,6 +46,7 @@ class ImageAdapter(
         }
 
         // 이미지를 선택 및 해제할 때마다 selectedImages 리스트 업데이트
+        // 길게 클릭해서 지워질 사진 선택
         holder.itemView.setOnLongClickListener {
             toggleSelection(currentImage)
             true

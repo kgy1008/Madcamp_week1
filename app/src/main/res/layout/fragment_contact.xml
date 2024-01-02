@@ -60,7 +60,7 @@
         android:id="@+id/btnPermission"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="권한 허용하기"
+        android:text="권한 설정"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/btnAddContacts"
         app:layout_constraintEnd_toEndOf="parent"

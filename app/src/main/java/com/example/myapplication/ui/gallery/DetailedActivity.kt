@@ -17,6 +17,7 @@ class DetailedActivity : AppCompatActivity() {
         if (image != null) {
             binding.imageView.setImageURI(image.imageSrc)
         }
+
     }
 
 

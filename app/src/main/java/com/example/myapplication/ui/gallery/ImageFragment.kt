@@ -42,7 +42,6 @@ class ImageFragment : Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         imageViewModel.images = images
-        //outState.putParcelableArrayList(IMAGES_KEY, images)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
