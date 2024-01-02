@@ -16,9 +16,16 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.myapplication.databinding.FragmentGalleryBinding
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
+import android.provider.Settings
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 
 class ImageFragment : Fragment() {
     private lateinit var imageAdapter: ImageAdapter
+    private val PERMISSION_CODE_GALLERY = 101
 
     private var _binding: FragmentGalleryBinding? = null
     private val binding get() = _binding!!
@@ -36,7 +43,6 @@ class ImageFragment : Fragment() {
     private lateinit var gridLayoutManager: GridLayoutManager
 
     //save
-    private val IMAGES_KEY = "images_key"
     private val imageViewModel: ImageViewModel by activityViewModels()
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -74,6 +80,10 @@ class ImageFragment : Fragment() {
         imageAdapter = ImageAdapter(requireContext(), images)
         recyclerView.adapter = imageAdapter
 
+        binding.galleryBtn.setOnClickListener {
+            checkPermissionAndOpenGallery()
+        }
+
         //checkbox
         check2.setOnCheckedChangeListener { _, isChecked ->
             if (isChecked) {
@@ -94,12 +104,6 @@ class ImageFragment : Fragment() {
         //delete button click event
         deleteButton.setOnClickListener { onDeleteButtonClick() }
 
-        binding.galleryBtn.setOnClickListener {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-            activityResult.launch(intent)
-        }
 
         //detailed additional window
         imageAdapter.onItemClick = {
@@ -110,6 +114,75 @@ class ImageFragment : Fragment() {
         return root
     }
 
+    private fun checkPermissionAndOpenGallery() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            openGallery()
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                PERMISSION_CODE_GALLERY
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_CODE_GALLERY -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openGallery()
+                } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES)) {
+                    showPermissionAlertDialog()
+                } else {
+                    goToSettingsAlertDialog()
+                }
+            }
+        }
+    }
+
+    private fun showPermissionAlertDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("권한 승인이 필요합니다.")
+            .setMessage("사진을 선택하려면 권한이 필요합니다.")
+            .setPositiveButton("허용하기") { _, _ ->
+                requestPermissions(
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                    PERMISSION_CODE_GALLERY
+                )
+            }
+            .setNegativeButton("취소하기") { _, _ -> }
+            .create()
+            .show()
+    }
+
+    private fun goToSettingsAlertDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("권한 승인이 필요합니다.")
+            .setMessage("앨범에 접근하기 위한 권한이 필요합니다.\n권한 -> 사진 및 동영상 접근 허용")
+            .setPositiveButton("허용하러 가기") { _, _ ->
+                val goSettingPermission = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                goSettingPermission.data = Uri.parse("package:${requireContext().packageName}")
+                startActivity(goSettingPermission)
+            }
+            .setNegativeButton("취소") { _, _ -> }
+            .create()
+            .show()
+    }
+
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        activityResult.launch(intent)
+    }
 
     private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()

@@ -62,16 +62,6 @@
             android:text="삭제"
             android:layout_marginEnd="8dp"/>
 
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btnPms"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="권한 설정"
-            android:visibility="gone"
-            app:layout_constraintBottom_toTopOf="@+id/btnAddContacts"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
 
     </LinearLayout>
 
