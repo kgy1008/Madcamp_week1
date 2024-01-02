@@ -142,28 +142,34 @@ class ContactFragment : Fragment(), View.OnClickListener {
     }
 
     private fun onCheckContactsPermission() {
-        val permissionDenied = ContextCompat.checkSelfPermission(
+        val permissionGranted = ContextCompat.checkSelfPermission(
             requireContext(),
             Manifest.permission.WRITE_CONTACTS
-        ) == PackageManager.PERMISSION_DENIED ||
+        ) == PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(
                     requireContext(),
                     Manifest.permission.READ_CONTACTS
-                ) == PackageManager.PERMISSION_DENIED
+                ) == PackageManager.PERMISSION_GRANTED
 
         binding?.apply {
-            btnPermission.isVisible = permissionDenied
-            txtDescription.isVisible = permissionDenied
-            btnAddContacts.isVisible = !permissionDenied
-            contactsList.isVisible = !permissionDenied
-
-            if (permissionDenied) {
-                txtDescription.text = "권한을 허용하셔야 이용하실 수 있습니다."
-            } else {
+            if (permissionGranted) {
                 getContactsList()
+                editTextSearch.isVisible = true
+            } else {
+                editTextSearch.isVisible = false
+            }
+
+            btnPermission.isVisible = !permissionGranted
+            txtDescription.isVisible = !permissionGranted
+            btnAddContacts.isVisible = permissionGranted
+            contactsList.isVisible = permissionGranted
+
+            if (!permissionGranted) {
+                txtDescription.text = "권한을 허용하셔야 이용하실 수 있습니다."
             }
         }
     }
+
 
     private fun requestPermission() {
         requestPermissions(
