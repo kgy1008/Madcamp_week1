@@ -20,7 +20,7 @@
         <ImageView
             android:id="@+id/testImage"
             android:layout_width="match_parent"
-            android:layout_height="500dp"
+            android:layout_height="450dp"
             android:background="@color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -53,6 +53,7 @@
             android:layout_height="wrap_content"
             android:text="prediction"
             android:layout_marginLeft="6dp"
+            android:textSize="20sp"
             android:id="@+id/resView"/>
 
     </LinearLayout>

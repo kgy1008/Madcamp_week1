@@ -49,9 +49,6 @@ class ImageFragment : Fragment() {
         if (savedInstanceState == null) {
             images = imageViewModel.images
         }
-        /*savedInstanceState?.let {
-            images = it.getParcelableArrayList(IMAGES_KEY) ?: ArrayList()
-        }*/
     }
 
     override fun onCreateView(
