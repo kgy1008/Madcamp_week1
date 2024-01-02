@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.FragmentContactBinding
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.inputmethod.EditorInfo
 
 class ContactFragment : Fragment(), View.OnClickListener {
 
@@ -81,6 +82,17 @@ class ContactFragment : Fragment(), View.OnClickListener {
                 filterContacts(s.toString()) // 검색어에 따라 연락처 필터링
             }
         })
+
+        // EditText에 텍스트 변경 감지를 위한 TextWatcher 대신에 setOnEditorActionListener 사용
+        binding?.editTextSearch?.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                // 검색 버튼이 눌렸을 때 실행되는 부분
+                filterContacts(binding?.editTextSearch?.text.toString())
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+
 
         binding?.btnClearImage?.setOnClickListener {
             binding?.editTextSearch?.setText("")
