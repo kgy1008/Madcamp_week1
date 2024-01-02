@@ -69,7 +69,7 @@ class NotificationsFragment : Fragment() {
             activityResult.launch(intent)*/
             val intent = Intent(Intent.ACTION_PICK)
             intent.type = "image/*"
-            intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             activityResult.launch(intent)
 
         }
@@ -112,29 +112,12 @@ class NotificationsFragment : Fragment() {
     }
     private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) {
-
-        //for printing repeat message one time
-        var isrepeat = false
-
-        if (it.resultCode == Activity.RESULT_OK) {
-            if (it.data!!.clipData != null) {
-                val count = it.data!!.clipData!!.itemCount
-                for (index in 0 until count) {
-                    val imageUri = it.data!!.clipData!!.getItemAt(index).uri
-                    bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
-                    testImage.setImageBitmap(bitmap)
-
-
-                }
-            } else {
-                val imageUri = it.data!!.data
-                bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
-                testImage.setImageBitmap(bitmap)
-
-            }
-
-
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // 하나의 이미지가 선택된 경우
+            val imageUri = result.data?.data
+            bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
+            testImage.setImageBitmap(bitmap)
         }
     }
 }
