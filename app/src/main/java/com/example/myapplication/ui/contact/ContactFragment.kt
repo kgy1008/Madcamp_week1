@@ -2,7 +2,6 @@ package com.example.myapplication.ui.contact
 
 import ContactsData
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -16,7 +15,6 @@ import androidx.fragment.app.Fragment
 import com.example.myapplication.databinding.FragmentContactBinding
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.inputmethod.InputMethodManager
 
 class ContactFragment : Fragment(), View.OnClickListener {
 
