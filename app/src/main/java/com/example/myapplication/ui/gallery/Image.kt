@@ -1,6 +1,11 @@
 package com.example.myapplication.ui.gallery
 
-class Image (
-    var title : String,
-    var imageSrc : Int
-)
+import android.graphics.Bitmap
+import android.net.Uri
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+data class Image (
+    var imageSrc : Uri
+) : Parcelable

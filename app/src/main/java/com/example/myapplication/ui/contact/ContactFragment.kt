@@ -170,8 +170,18 @@ class ContactFragment : Fragment(), View.OnClickListener {
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        // Handle permission request results
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
+                    getContactsList()
+                }
+            }
+            else -> {
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+            }
+        }
     }
+
 
     private fun getContactsList() {
         val contacts = requireContext().contentResolver.query(
