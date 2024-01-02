@@ -3,7 +3,6 @@ package com.example.myapplication.ui.notifications
 import android.app.Activity
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,13 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.example.myapplication.R
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.ml.ModelUnquant
 import com.example.myapplication.ui.gallery.Image
@@ -65,12 +62,11 @@ class NotificationsFragment : Fragment() {
 
         // 사진 선택 버튼
         selectBtn.setOnClickListener {
-            /*val intent: Intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-            activityResult.launch(intent)*/
-            val intent = Intent(Intent.ACTION_PICK)
+
+            val intent = Intent(Intent.ACTION_GET_CONTENT)
             intent.type = "image/*"
-            //intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
             activityResult.launch(intent)
+            resView.text = "prediction"
 
         }
 
@@ -121,6 +117,3 @@ class NotificationsFragment : Fragment() {
         }
     }
 }
-
-
-
