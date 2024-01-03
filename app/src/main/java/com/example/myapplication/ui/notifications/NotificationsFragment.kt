@@ -92,7 +92,7 @@ class NotificationsFragment : Fragment() {
             if (resView.text.toString().substring(0,3) == "태양인"){
                 detailtxt.text = "소수의 사람만이 태양인에 속해 감별이 쉽지는 않다는 특징이 있다.\n\n" + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<외형>\n"+
                         "대체적으로 태양인에 속하는 사람들은 하체 보단 상체가 발달되었으며, 머리는 큰편이다.\n\n" + "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<성격>\n"+
-                                "태양인에 속하는 사람들은 머리가 좋으며 원만한 사회관계를 유지하지만 자존심등이 세고 의욕이 너무앞서다 보니 독선적이기도 한다.\n\n"+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<건강>\n"+
+                        "태양인에 속하는 사람들은 머리가 좋으며 원만한 사회관계를 유지하지만 자존심등이 세고 의욕이 너무앞서다 보니 독선적이기도 한다.\n\n"+"\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t<건강>\n"+
                         "하체가 약하므로 오래 걸으면 무리가 온다. 태양인에 속하는 여자는 대체적으로 약한 자궁으로 인해 아이를 출산하기 힘들다."
             }
             else if (resView.text.toString().substring(0,3) == "태음인") {
