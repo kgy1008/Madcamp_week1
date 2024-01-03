@@ -33,6 +33,8 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 class NotificationsFragment : Fragment() {
 
     private val PERMISSION_CODE_GALLERY = 101
+    private var isImageSelected = false
+
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
 
@@ -76,40 +78,55 @@ class NotificationsFragment : Fragment() {
 
         // 분석 시작 버튼
         predBtn.setOnClickListener {
+            if (!isImageSelected) {
+                showImageSelectionWarning()
+            } else {
 
-            // 이미지 전처리 과정
-            var tensorImage = TensorImage(DataType.FLOAT32)
-            tensorImage.load(bitmap)
-            tensorImage = imageProcessor.process(tensorImage)
+                // 이미지 전처리 과정
+                var tensorImage = TensorImage(DataType.FLOAT32)
+                tensorImage.load(bitmap)
+                tensorImage = imageProcessor.process(tensorImage)
 
-            val model = ModelUnquant.newInstance(requireContext())
-            val inputFeature0 =
-                TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
-            inputFeature0.loadBuffer(tensorImage.buffer)
+                val model = ModelUnquant.newInstance(requireContext())
+                val inputFeature0 =
+                    TensorBuffer.createFixedSize(intArrayOf(1, 224, 224, 3), DataType.FLOAT32)
+                inputFeature0.loadBuffer(tensorImage.buffer)
 
-            val outputs = model.process(inputFeature0)
-            val outputFeatureO = outputs.outputFeature0AsTensorBuffer.floatArray
+                val outputs = model.process(inputFeature0)
+                val outputFeatureO = outputs.outputFeature0AsTensorBuffer.floatArray
 
-            // 결과를 정렬
-            val sortedResults = outputFeatureO.mapIndexed { index, fl -> index to fl }
-                .sortedByDescending { (_, fl) -> fl }
+                // 결과를 정렬
+                val sortedResults = outputFeatureO.mapIndexed { index, fl -> index to fl }
+                    .sortedByDescending { (_, fl) -> fl }
 
-            // 정렬된 결과를 출력
-            var labels = resources.assets.open("labels.txt").bufferedReader().readLines()
-            val resultText = buildString {
+                // 정렬된 결과를 출력
+                var labels = resources.assets.open("labels.txt").bufferedReader().readLines()
+                val resultText = buildString {
 
-                sortedResults.forEach { (index, fl) ->
-                    val label = labels[index]
-                    append("$label: %.1f%%\n".format(fl * 100))
+                    sortedResults.forEach { (index, fl) ->
+                        val label = labels[index]
+                        append("$label: %.1f%%\n".format(fl * 100))
+                    }
                 }
+
+                resView.text = resultText
+                model.close()
             }
-
-            resView.text = resultText
-            model.close()
         }
-
         return root
     }
+
+    private fun showImageSelectionWarning() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("이미지 미선택")
+            .setMessage("분석하기 전에 이미지를 선택해주세요.")
+            .setPositiveButton("확인") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
+    }
+
 
     private fun checkPermissionAndSelectImage() {
         if (ContextCompat.checkSelfPermission(
@@ -189,6 +206,12 @@ class NotificationsFragment : Fragment() {
             bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
             testImage.setImageBitmap(bitmap)
             testImage.setBackgroundResource(android.R.color.transparent)
+            isImageSelected = true
         }
+        else {
+            // 선택된 이미지가 없는 경우 처리 (선택 사항)
+            isImageSelected = false
+        }
+
     }
 }
