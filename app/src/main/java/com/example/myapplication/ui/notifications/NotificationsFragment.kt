@@ -97,7 +97,7 @@ class NotificationsFragment : Fragment() {
                 .sortedByDescending { (_, fl) -> fl }
 
             // 정렬된 결과를 출력
-            val labels = arrayOf("개", "고양이", "곰", "사람")
+            val labels = arrayOf("고양이", "개")
             val barChart: BarChart = binding.barChartView
 
             val entries = ArrayList<BarEntry>()

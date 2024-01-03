@@ -1,2 +1,2 @@
-0 cat
-1 dog
+cat
+dog
