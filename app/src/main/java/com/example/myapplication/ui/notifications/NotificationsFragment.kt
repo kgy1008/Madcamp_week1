@@ -45,7 +45,6 @@ class NotificationsFragment : Fragment() {
 
     private lateinit var selectBtn: Button
     private lateinit var predBtn: Button
-    private lateinit var resView: TextView
     private lateinit var testImage: ImageView
 
     private lateinit var bitmap: Bitmap
@@ -65,7 +64,6 @@ class NotificationsFragment : Fragment() {
         // 뷰바인딩을 사용하여 뷰 참조
         selectBtn = binding.selectBtn
         predBtn = binding.predictBtn
-        resView = binding.resView
         testImage = binding.testImage
 
         val imageProcessor = ImageProcessor.Builder()
@@ -74,7 +72,7 @@ class NotificationsFragment : Fragment() {
 
         selectBtn.setOnClickListener {
             checkPermissionAndSelectImage()
-            resView.text = "prediction"
+
         }
 
         // 분석 시작 버튼

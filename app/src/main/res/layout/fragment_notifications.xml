@@ -22,13 +22,14 @@
         <ImageView
             android:id="@+id/testImage"
             android:layout_width="match_parent"
-            android:layout_height="450dp"
-            android:background="@drawable/ic_photo"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_height="418dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_photo"
+            app:layout_constraintBottom_toTopOf="@+id/llayout"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toTopOf="parent" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,18 +52,10 @@
 
         </LinearLayout>
 
-        <TextView
-            android:id="@+id/resView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="6dp"
-            android:text="prediction"
-            android:textSize="20sp" />
-
-        <com.github.mikephil.charting.charts.BarChart
+        <com.github.mikephil.charting.charts.HorizontalBarChart
             android:id="@+id/barChartView"
             android:layout_width="match_parent"
-            android:layout_height="200dp" />
+            android:layout_height="236dp" />
 
     </LinearLayout>
 
