@@ -1,8 +1,11 @@
 package com.example.myapplication.ui.notifications
 
 import android.app.Activity
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.LayoutInflater
@@ -11,8 +14,11 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.app.AlertDialog
+import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
@@ -26,6 +32,7 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer
 
 class NotificationsFragment : Fragment() {
 
+    private val PERMISSION_CODE_GALLERY = 101
     private var _binding: FragmentNotificationsBinding? = null
     private val binding get() = _binding!!
 
@@ -36,8 +43,6 @@ class NotificationsFragment : Fragment() {
 
     private lateinit var bitmap: Bitmap
     var images: ArrayList<Image> = ArrayList()
-
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -60,14 +65,9 @@ class NotificationsFragment : Fragment() {
             .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR))
             .build()
 
-        // 사진 선택 버튼
         selectBtn.setOnClickListener {
-
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "image/*"
-            activityResult.launch(intent)
+            checkPermissionAndSelectImage()
             resView.text = "prediction"
-
         }
 
         // 분석 시작 버튼
@@ -92,7 +92,7 @@ class NotificationsFragment : Fragment() {
                 .sortedByDescending { (_, fl) -> fl }
 
             // 정렬된 결과를 출력
-            val labels = arrayOf("cat", "dog", "bear")
+            val labels = arrayOf("고양이", "개", "곰", "새")
             val resultText = buildString {
                 sortedResults.forEach { (index, fl) ->
                     val label = labels[index]
@@ -106,6 +106,76 @@ class NotificationsFragment : Fragment() {
 
         return root
     }
+
+    private fun checkPermissionAndSelectImage() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.READ_MEDIA_IMAGES
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            openImageSelection()
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                PERMISSION_CODE_GALLERY
+            )
+        }
+    }
+
+    private fun showPermissionAlertDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("권한 승인이 필요합니다.")
+            .setMessage("사진을 선택하려면 권한이 필요합니다.")
+            .setPositiveButton("허용하기") { _, _ ->
+                requestPermissions(
+                    arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
+                    PERMISSION_CODE_GALLERY
+                )
+            }
+            .setNegativeButton("취소하기") { _, _ -> }
+            .create()
+            .show()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_CODE_GALLERY -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    openImageSelection()
+                } else if (shouldShowRequestPermissionRationale(Manifest.permission.READ_MEDIA_IMAGES)) {
+                    showPermissionAlertDialog()
+                } else {
+                    goSettingActivityAlertDialog()
+                }
+            }
+        }
+    }
+
+    private fun goSettingActivityAlertDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle("권한 승인이 필요합니다.")
+            .setMessage("앨범에 접근하기 위한 권한이 필요합니다.\n권한 -> 사진 및 동영상 접근 허용")
+            .setPositiveButton("허용하러 가기") { _, _ ->
+                val goSettingPermission = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                goSettingPermission.data = Uri.parse("package:${requireContext().packageName}")
+                startActivity(goSettingPermission)
+            }
+            .setNegativeButton("취소") { _, _ -> }
+            .create()
+            .show()
+    }
+
+    private fun openImageSelection() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        activityResult.launch(intent)
+    }
+
     private val activityResult: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->

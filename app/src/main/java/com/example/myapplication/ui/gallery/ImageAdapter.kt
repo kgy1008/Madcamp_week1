@@ -77,7 +77,7 @@ class ImageAdapter(
             // 이미지를 어둡게 만들기 위한 ColorMatrix 생성
             val colorMatrix = ColorMatrix().apply {
                 if (isSelected) {
-                    setScale(0.7f, 0.7f, 0.7f, 1f) // 색을 어둡게 만들기 위한 값 설정
+                    setScale(0.5f, 0.5f, 0.5f, 1f) // 색을 어둡게 만들기 위한 값 설정
                 } else {
                     reset() // 선택이 해제되면 적용된 필터를 제거
                 }
