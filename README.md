@@ -1,4 +1,4 @@
-# 프로젝트 이름
+# Fortune-teller
 > 카이스트 몰입캠프 week1 1분반 
 ## 제작자
 - 김가연 (성균관대학교 컴퓨터교육과)
@@ -15,9 +15,10 @@
 첫번째 탭은 연락처입니다. 기기의 연락처에서 접근 권한 허용을 받은 후 데이터를 가져와서 목록을 구성합니다. 각 아이템을 클릭하면 새로운 창이 나와 연락처를 편집하거나 삭제할 수 있습니다. 또한 오른쪽 아래에 위치한 '+' 아이콘을 누르면 연락처를 새롭게 추가할 수 있습니다. 더하여 검색 기능도 지원합니다. 연락처가 궁금할 경우, 이름을 통해 전화번호를 검색해보세요!
 
 ### 2. 갤러리
-![KakaoTalk_Photo_2024-01-03-20-29-44 001png](https://github.com/kgy1008/Madcamp_week1/assets/84284757/434e7b96-d184-4c3d-b976-c2a01d54de81)
-![KakaoTalk_Photo_2024-01-03-20-29-45 002png](https://github.com/kgy1008/Madcamp_week1/assets/84284757/f85ca7dd-52aa-4d08-b090-d04bbc8dc8f5)
-![KakaoTalk_Photo_2024-01-03-20-29-46 003png](https://github.com/kgy1008/Madcamp_week1/assets/84284757/a76e8c09-7946-49ef-86b9-6a1d0106b1e2)
+<img width="300" alt="image" src="https://github.com/kgy1008/Madcamp_week1/assets/84284757/80f4bce9-56c3-4b7b-a6a9-eeb3df69a60d">
+<img width="300" alt="image" src="https://github.com/kgy1008/Madcamp_week1/assets/84284757/aeaf2e37-0f03-47e8-8dc4-e4261da95bbb">
+<img width="300" alt="image" src="https://github.com/kgy1008/Madcamp_week1/assets/84284757/cb2e03b9-9849-4437-a96f-5119f8cf2d00">
+
 
 두번째 탭은 갤러리입니다. 기기의 앨범에서 접근 권한 허용을 받은 후 이미지를 선택해 나만의 앨범을 구성합니다. 각 아이템을 클릭하면 두 손가락으로 이미지를 확대할 수 있습니다. 체크박스 클릭을 통해 배열 양식을 결정할 수 있으며 이미지를 길게 누르면 삭제를 할 수 있습니다. 
 
