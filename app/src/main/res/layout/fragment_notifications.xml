@@ -59,6 +59,11 @@
             android:text="prediction"
             android:textSize="20sp" />
 
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChartView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

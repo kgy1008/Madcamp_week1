@@ -15,6 +15,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.app.AlertDialog
+import android.graphics.Color
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,6 +25,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.ml.ModelUnquant
 import com.example.myapplication.ui.gallery.Image
+import com.github.mikephil.charting.charts.BarChart
+import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.BarData
+import com.github.mikephil.charting.data.BarDataSet
+import com.github.mikephil.charting.data.BarEntry
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -67,6 +74,7 @@ class NotificationsFragment : Fragment() {
 
         selectBtn.setOnClickListener {
             checkPermissionAndSelectImage()
+            resView.text = "prediction"
         }
 
         // 분석 시작 버튼
@@ -91,20 +99,32 @@ class NotificationsFragment : Fragment() {
                 .sortedByDescending { (_, fl) -> fl }
 
             // 정렬된 결과를 출력
-            val labels = arrayOf("cat", "dog", "bear")
-            val resultText = buildString {
-                sortedResults.forEach { (index, fl) ->
-                    val label = labels[index]
-                    append("$label: %.1f%%\n".format(fl * 100))
-                }
+            val labels = arrayOf("개", "고양이", "곰", "사람")
+            val barChart: BarChart = binding.barChartView
+
+            val entries = ArrayList<BarEntry>()
+            sortedResults.forEachIndexed { index, (_, fl) ->
+                entries.add(BarEntry(index.toFloat(), fl * 100)) // 바 차트에 표시할 데이터 추가
             }
 
-            resView.text = resultText
+            val barDataSet = BarDataSet(entries, "Prediction Results")
+            barDataSet.color = Color.parseColor("#2196F3") // 바 색상 설정
+
+            val xAxis = barChart.xAxis
+            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
+            xAxis.position = XAxis.XAxisPosition.BOTTOM
+            xAxis.granularity = 1f
+
+            val barData = BarData(barDataSet)
+            barChart.data = barData
+            barChart.invalidate() // 그래프 갱신
+
             model.close()
         }
 
         return root
     }
+
 
     private fun checkPermissionAndSelectImage() {
         if (ContextCompat.checkSelfPermission(
