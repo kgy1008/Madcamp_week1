@@ -22,14 +22,13 @@
         <ImageView
             android:id="@+id/testImage"
             android:layout_width="match_parent"
-            android:layout_height="418dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_photo"
-            app:layout_constraintBottom_toTopOf="@+id/llayout"
+            android:layout_height="450dp"
+            android:background="@drawable/ic_photo"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -52,10 +51,22 @@
 
         </LinearLayout>
 
-        <com.github.mikephil.charting.charts.HorizontalBarChart
-            android:id="@+id/barChartView"
-            android:layout_width="match_parent"
-            android:layout_height="236dp" />
+        <TextView
+            android:id="@+id/resView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:text="Prediction:"
+            android:textSize="15sp" />
+
+        <!-- 최고 예측 백분율에 대한 설명을 표시할 TextView -->
+        <TextView
+            android:id="@+id/highestPredictionDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="6dp"
+            android:text=""
+            android:textSize="16sp" />
 
     </LinearLayout>
 

@@ -15,7 +15,6 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.app.AlertDialog
-import android.graphics.Color
 import android.provider.Settings
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,12 +24,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.myapplication.databinding.FragmentNotificationsBinding
 import com.example.myapplication.ml.ModelUnquant
 import com.example.myapplication.ui.gallery.Image
-import com.github.mikephil.charting.charts.BarChart
-import com.github.mikephil.charting.components.XAxis
-import com.github.mikephil.charting.data.BarData
-import com.github.mikephil.charting.data.BarDataSet
-import com.github.mikephil.charting.data.BarEntry
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.support.image.ImageProcessor
 import org.tensorflow.lite.support.image.TensorImage
@@ -45,6 +38,7 @@ class NotificationsFragment : Fragment() {
 
     private lateinit var selectBtn: Button
     private lateinit var predBtn: Button
+    private lateinit var resView: TextView
     private lateinit var testImage: ImageView
 
     private lateinit var bitmap: Bitmap
@@ -64,7 +58,11 @@ class NotificationsFragment : Fragment() {
         // 뷰바인딩을 사용하여 뷰 참조
         selectBtn = binding.selectBtn
         predBtn = binding.predictBtn
+        resView = binding.resView
         testImage = binding.testImage
+
+        //
+
 
         val imageProcessor = ImageProcessor.Builder()
             .add(ResizeOp(224, 224, ResizeOp.ResizeMethod.BILINEAR))
@@ -72,6 +70,7 @@ class NotificationsFragment : Fragment() {
 
         selectBtn.setOnClickListener {
             checkPermissionAndSelectImage()
+            resView.text = "prediction:"
 
         }
 
@@ -81,7 +80,6 @@ class NotificationsFragment : Fragment() {
             // 이미지 전처리 과정
             var tensorImage = TensorImage(DataType.FLOAT32)
             tensorImage.load(bitmap)
-
             tensorImage = imageProcessor.process(tensorImage)
 
             val model = ModelUnquant.newInstance(requireContext())
@@ -97,32 +95,21 @@ class NotificationsFragment : Fragment() {
                 .sortedByDescending { (_, fl) -> fl }
 
             // 정렬된 결과를 출력
-            val labels = arrayOf("고양이", "개")
-            val barChart: BarChart = binding.barChartView
+            var labels = resources.assets.open("labels.txt").bufferedReader().readLines()
+            val resultText = buildString {
 
-            val entries = ArrayList<BarEntry>()
-            sortedResults.forEachIndexed { index, (_, fl) ->
-                entries.add(BarEntry(index.toFloat(), fl * 100)) // 바 차트에 표시할 데이터 추가
+                sortedResults.forEach { (index, fl) ->
+                    val label = labels[index]
+                    append("$label: %.1f%%\n".format(fl * 100))
+                }
             }
 
-            val barDataSet = BarDataSet(entries, "Prediction Results")
-            barDataSet.color = Color.parseColor("#2196F3") // 바 색상 설정
-
-            val xAxis = barChart.xAxis
-            xAxis.valueFormatter = IndexAxisValueFormatter(labels)
-            xAxis.position = XAxis.XAxisPosition.BOTTOM
-            xAxis.granularity = 1f
-
-            val barData = BarData(barDataSet)
-            barChart.data = barData
-            barChart.invalidate() // 그래프 갱신
-
+            resView.text = resultText
             model.close()
         }
 
         return root
     }
-
 
     private fun checkPermissionAndSelectImage() {
         if (ContextCompat.checkSelfPermission(
@@ -201,8 +188,7 @@ class NotificationsFragment : Fragment() {
             val imageUri = result.data?.data
             bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
             testImage.setImageBitmap(bitmap)
-            // 이미지 선택 후 배경 숨기기
-            testImage.setBackgroundResource(android.R.color.transparent) // 배경을 투명하게 변경
+            testImage.setBackgroundResource(android.R.color.transparent)
         }
     }
 }
