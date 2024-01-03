@@ -183,6 +183,8 @@ class NotificationsFragment : Fragment() {
             val imageUri = result.data?.data
             bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, imageUri)
             testImage.setImageBitmap(bitmap)
+            // 이미지 선택 후 배경 숨기기
+            testImage.setBackgroundResource(android.R.color.transparent) // 배경을 투명하게 변경
         }
     }
 }
